@@ -6,7 +6,7 @@ pipeline {
     }
     environment { 
         packageVersion = ''
-        nexusURL = '3.83.95.130:8081'
+        nexusURL = '184.72.106.228:8081'
     }
     options {
         timeout(time: 1, unit: 'HOURS')
@@ -17,7 +17,7 @@ pipeline {
 
         // text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
 
-        // booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
+        booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
 
         // choice(name: 'CHOICE', choices: ['One', 'Two', 'Three'], description: 'Pick something')
 
@@ -41,20 +41,20 @@ pipeline {
                 """
             }
         }
-        // stage('Unit tests') {
-        //     steps {
-        //         sh """
-        //             echo "unit tests will run here"
-        //         """
-        //     }
-        // }
-        // stage('Sonar Scan'){
-        //     steps{
-        //         sh """
-        //             sonar-scanner
-        //         """
-        //     }
-        // }
+        stage('Unit tests') {
+            steps {
+                sh """
+                    echo "unit tests will run here"
+                """
+            }
+        }
+        stage('Sonar Scan'){
+            steps{
+                sh """
+                    sonar-scanner
+                """
+            }
+        }
         stage('Build') {
             steps {
                 sh """
@@ -83,28 +83,28 @@ pipeline {
                 )
             }
         }
-        // stage('Deploy') {
-        //     when {
-        //         expression{
-        //             params.Deploy == 'true'
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //                 def params = [
-        //                     string(name: 'version', value: "$packageVersion"),
-        //                     string(name: 'environment', value: "dev")
-        //                 ]
-        //                 build job: "catalogue-deploy", wait: true, parameters: params
-        //             }
-        //     }
-        // }
+        stage('Deploy') {
+            when {
+                expression{
+                    params.Deploy == 'true'
+                }
+            }
+            steps {
+                script {
+                        def params = [
+                            string(name: 'version', value: "$packageVersion"),
+                            string(name: 'environment', value: "dev")
+                        ]
+                        build job: "catalogue-deploy", wait: true, parameters: params
+                    }
+            }
+        }
     }
     // post build
     post { 
         always { 
             echo 'I will always say Hello again!'
-            // deleteDir()
+            deleteDir()
         }
         failure { 
             echo 'this runs when pipeline is failed, used generally to send some alerts'
